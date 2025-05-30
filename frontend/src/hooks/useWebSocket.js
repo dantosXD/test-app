@@ -23,7 +23,7 @@ const useWebSocket = (tableId, onMessageCallback) => {
         webSocketRef.current.close();
         webSocketRef.current = null;
     }
-    
+
     // Connect only if there's no current connection or if it's for a different table
     if (!webSocketRef.current) {
         const wsUrl = `ws://localhost:8000/ws/table/${tableId}`; // Ensure this matches your backend URL/port
@@ -64,7 +64,7 @@ const useWebSocket = (tableId, onMessageCallback) => {
             webSocketRef.current = null;
           }
         };
-        
+
         webSocketRef.current = ws;
     }
 

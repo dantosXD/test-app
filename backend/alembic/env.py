@@ -23,13 +23,13 @@ def run_migrations_offline() -> None:
     from app.database import Base
     import app.models
     context_target_metadata = Base.metadata
-    
+
     context.configure(
-        url=settings.DATABASE_URL, 
+        url=settings.DATABASE_URL,
         target_metadata=context_target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        compare_type=True, 
+        compare_type=True,
         compare_server_default=True,
         render_as_batch=True # Added for SQLite compatibility if needed, good practice
     )
@@ -44,10 +44,10 @@ def run_migrations_online() -> None:
     from app.database import Base
     import app.models
     context_target_metadata = Base.metadata
-    
+
     connectable = engine_from_config(
-        {"sqlalchemy.url": settings.DATABASE_URL}, 
-        prefix="sqlalchemy.", 
+        {"sqlalchemy.url": settings.DATABASE_URL},
+        prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
@@ -55,7 +55,7 @@ def run_migrations_online() -> None:
         context.configure(
             connection=connection,
             target_metadata=context_target_metadata,
-            compare_type=True, 
+            compare_type=True,
             compare_server_default=True,
             render_as_batch=True # Added for SQLite compatibility if needed, good practice
         )

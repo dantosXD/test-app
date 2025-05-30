@@ -41,7 +41,7 @@ async def read_field_endpoint(
 ):
     db_field = crud.get_field(db, field_id=field_id, user_id=current_user.id)
     # This check is also in crud.get_field, but included for robustness / explicitness at router level
-    if db_field is None: 
+    if db_field is None:
         raise HTTPException(status_code=404, detail="Field not found or insufficient permissions")
     return db_field
 
@@ -54,7 +54,7 @@ async def update_field_endpoint(
 ):
     updated_field = crud.update_field(db, field_id=field_id, field_update=field_update, user_id=current_user.id)
     # This check is also in crud.update_field
-    if updated_field is None: 
+    if updated_field is None:
         raise HTTPException(status_code=404, detail="Field not found or insufficient permissions")
     return updated_field
 
@@ -66,6 +66,6 @@ async def delete_field_endpoint(
 ):
     deleted_field = crud.delete_field(db, field_id=field_id, user_id=current_user.id)
     # This check is also in crud.delete_field
-    if deleted_field is None: 
+    if deleted_field is None:
         raise HTTPException(status_code=404, detail="Field not found or insufficient permissions")
     return Response(status_code=status.HTTP_204_NO_CONTENT)

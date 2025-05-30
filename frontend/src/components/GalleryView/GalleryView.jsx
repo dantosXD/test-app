@@ -22,7 +22,7 @@ const GalleryViewComponent = ({ records, viewConfig }) => {
     padding: '20px 0', // Padding around the gallery
     justifyContent: 'center', // Center cards if they don't fill the row
   };
-  
+
   const handleCardClick = (recordId) => {
     // For now, basic alert. Later, can open a record detail modal or page.
     alert(`Card clicked for Record ID: ${recordId}`);
@@ -32,7 +32,7 @@ const GalleryViewComponent = ({ records, viewConfig }) => {
   return (
     <div className="gallery-view-container">
       {title && <h3 style={{ textAlign: 'center', margin: '20px 0' }}>{title}</h3>}
-      
+
       {(!records || records.length === 0) && <p style={{textAlign: 'center'}}>No records to display in this gallery.</p>}
 
       <div style={galleryStyle}>
@@ -69,9 +69,9 @@ const GalleryViewComponent = ({ records, viewConfig }) => {
               key={record.id}
               record={record} // record here should have `values` as a map {field_id: primitive_value}
               viewConfig={{ // Pass only relevant parts of viewConfig to card
-                cover_field_id, 
-                card_visible_field_ids: visibleFieldIdsOnCard, 
-                card_width 
+                cover_field_id,
+                card_visible_field_ids: visibleFieldIdsOnCard,
+                card_width
               }}
               allFields={allFieldsFromStore} // Pass all field definitions
               onCardClick={handleCardClick}

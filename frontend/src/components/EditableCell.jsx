@@ -38,7 +38,7 @@ const EditableCell = ({ getValue, row, column, table }) => {
             {choice}
           </option>
         ))}
-        {!value && <option value="" disabled hidden></option>} 
+        {!value && <option value="" disabled hidden></option>}
       </select>
     );
   } else if (fieldType === 'multiSelect') {
@@ -92,7 +92,7 @@ const EditableCell = ({ getValue, row, column, table }) => {
                 // Optionally show an error to the user for specific file
             }
         }
-        
+
         // New value is existing attachments plus newly uploaded ones
         const newValue = [...attachments, ...uploadedFileMetadata];
         table.options.meta?.updateData(row.original.id, column.id, newValue);
@@ -117,15 +117,15 @@ const EditableCell = ({ getValue, row, column, table }) => {
             ))}
             {!readOnly && (
                 <div style={{marginTop: attachments.length > 0 ? '5px' : '0'}}>
-                    <input 
-                        type="file" 
-                        multiple 
-                        onChange={handleFileChange} 
-                        id={`file-upload-${row.original.id}-${column.id}`} 
+                    <input
+                        type="file"
+                        multiple
+                        onChange={handleFileChange}
+                        id={`file-upload-${row.original.id}-${column.id}`}
                         style={{display: 'none'}}
                     />
-                    <label 
-                        htmlFor={`file-upload-${row.original.id}-${column.id}`} 
+                    <label
+                        htmlFor={`file-upload-${row.original.id}-${column.id}`}
                         style={{padding:'3px 6px', fontSize:'0.8em', backgroundColor:'#eee', border:'1px solid #ccc', borderRadius:'3px', cursor:'pointer'}}
                     >
                         + Add

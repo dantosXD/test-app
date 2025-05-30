@@ -1,8 +1,8 @@
 """initial_setup
 
 Revision ID: 001
-Revises: 
-Create Date: 2025-05-29 19:00:00.000000 
+Revises:
+Create Date: 2025-05-29 19:00:00.000000
 
 """
 from alembic import op

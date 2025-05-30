@@ -16,7 +16,7 @@ ALLOWED_OPERATORS = {
 ALLOWED_FUNCTIONS = {
     # "sqrt": math.sqrt, # Example
 }
-ALLOWED_NAMES = {**{name: func for name, func in ALLOWED_FUNCTIONS.items()}, 
+ALLOWED_NAMES = {**{name: func for name, func in ALLOWED_FUNCTIONS.items()},
                  **{konst: getattr(math, konst) for konst in ["pi", "e"] if hasattr(math, konst)}}
 
 
@@ -26,7 +26,7 @@ def get_field_value_from_map(field_id_str: str, record_values_map: dict, field_d
     Assumes field_id_str is like "field_123".
     """
     actual_id = int(field_id_str.split('_')[1])
-    
+
     value_obj = record_values_map.get(actual_id)
     field_def = field_defs_map.get(actual_id)
 
@@ -60,15 +60,15 @@ def evaluate_formula(formula_string: str, record_values_map: dict, field_defs_ma
     def replace_placeholder(match):
         placeholder = match.group(0) # e.g., {field_123}
         field_id_str_token = placeholder.strip('{}') # e.g., field_123
-        
+
         value = get_field_value_from_map(field_id_str_token, record_values_map, field_defs_map)
-        
+
         if value is None:
             # If a referenced field has no value, it's problematic for most ops.
             # Could default to 0 for numeric, or raise specific error.
             # For now, returning "None" as string which will likely fail eval safely or be handled by it.
-            return "None" 
-        
+            return "None"
+
         # Ensure the value is a string representation of a number for safe eval,
         # or if strings are allowed in formulas, ensure proper quoting (not handled here yet).
         # For now, assuming numeric context.
@@ -97,7 +97,7 @@ def evaluate_formula(formula_string: str, record_values_map: dict, field_defs_ma
 
     # Simpler placeholder: {ID}, e.g., "{123} + {456}"
     processed_formula = re.sub(r"\{(\d+)\}", lambda m: str(get_field_value_from_map(f"field_{m.group(1)}", record_values_map, field_defs_map) or 0), formula_string)
-    
+
     # Security: Validate the processed_formula to ensure it only contains allowed characters/operations
     # This is a very basic check, a proper tokenizer/parser is better.
     allowed_chars_pattern = r"^[0-9\.\s\(\)\+\-\*\/]*$" # Allows numbers, dots, spaces, parens, and basic operators
@@ -112,21 +112,21 @@ def evaluate_formula(formula_string: str, record_values_map: dict, field_defs_ma
         # A real implementation should use a safer evaluation library (e.g., asteval)
         # or a custom parser for the specific allowed operations.
         # For this basic step, we are using it with heavy caveats.
-        
+
         # Create a limited scope for eval
         # No builtins are passed, only allowed names (math constants/functions if any)
         # This still doesn't make eval fully safe from all exploits (e.g., resource exhaustion).
-        scope = {"__builtins__": {}} 
+        scope = {"__builtins__": {}}
         # Add any allowed functions/constants to scope here if using them
-        # scope.update(ALLOWED_NAMES) 
+        # scope.update(ALLOWED_NAMES)
 
         result = eval(processed_formula, scope, {}) # No locals passed either
-        
+
         if isinstance(result, (int, float)):
             return result
         else:
             return "Error: Formula result is not a number"
-            
+
     except ZeroDivisionError:
         return "Error: Division by zero"
     except SyntaxError:

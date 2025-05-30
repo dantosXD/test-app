@@ -6,8 +6,8 @@ import PrivateRoute from './components/PrivateRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
-import BaseDetailPage from './pages/BaseDetailPage'; 
-import TableDetailPage from './pages/TableDetailPage'; 
+import BaseDetailPage from './pages/BaseDetailPage';
+import TableDetailPage from './pages/TableDetailPage';
 import PublicFormPage from './pages/PublicFormPage.jsx'; // Import PublicFormPage
 import useAuthStore from './store/authStore';
 import authService from './services/authService';
@@ -22,12 +22,12 @@ function App() {
 
   useEffect(() => {
     const checkUser = async () => {
-      if (token && isAuthenticated && !user?.id) { 
+      if (token && isAuthenticated && !user?.id) {
         try {
-          await authService.getCurrentUser(); 
+          await authService.getCurrentUser();
         } catch (error) {
           console.error("Session check failed, logging out:", error);
-           authService.logout(); 
+           authService.logout();
         }
       } else if (!token && isAuthenticated) {
         logout();
@@ -44,14 +44,14 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forms/:viewId" element={<PublicFormPage />} /> {/* Public form route */}
-        
+
         <Route path="/" element={<PrivateRoute />}>
-          <Route index element={<DashboardPage />} /> 
-          <Route path="dashboard" element={<DashboardPage />} /> 
-          <Route path="bases/:baseId" element={<BaseDetailPage />} /> 
-          <Route path="tables/:tableId" element={<TableDetailPage />} /> 
+          <Route index element={<DashboardPage />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="bases/:baseId" element={<BaseDetailPage />} />
+          <Route path="tables/:tableId" element={<TableDetailPage />} />
         </Route>
-        
+
         <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />} />
       </Routes>
     </Router>

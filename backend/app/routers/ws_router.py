@@ -7,8 +7,8 @@ router = APIRouter(
 
 @router.websocket("/ws/table/{table_id}")
 async def websocket_endpoint(
-    websocket: WebSocket, 
-    table_id: str, 
+    websocket: WebSocket,
+    table_id: str,
     manager: ConnectionManager = Depends(get_connection_manager)
 ):
     room_id = f"table_{table_id}"
@@ -18,7 +18,7 @@ async def websocket_endpoint(
             # Keep the connection alive by waiting for messages.
             # If you need to handle client-sent messages, process them here.
             # For now, this primarily serves to keep the connection open for server-sent events.
-            data = await websocket.receive_text() 
+            data = await websocket.receive_text()
             # Optionally, echo back or handle client messages:
             # await manager.broadcast_to_room(f"Client {websocket.client} in room {room_id} says: {data}", room_id)
             print(f"Received message from {websocket.client} in room {room_id}: {data} (not broadcasting)")

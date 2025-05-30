@@ -4,7 +4,7 @@ import useAuthStore from '../store/authStore';
 
 const PrivateRoute = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  
+
   // Check token and user presence as well, not just isAuthenticated flag initially
   // because initialize() might set isAuthenticated based on token presence alone.
   // A more robust check might involve verifying token validity or user object completeness.
@@ -18,7 +18,7 @@ const PrivateRoute = () => {
     // than dropping them off on the home page.
     return <Navigate to="/login" replace />;
   }
-  
+
   // If user object is null/empty but token exists, you might want to trigger
   // a fetch for user details or show a loading state before rendering Outlet.
   // For now, we assume if token exists, it's okay.

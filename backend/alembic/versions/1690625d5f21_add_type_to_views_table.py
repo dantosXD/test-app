@@ -20,17 +20,17 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     # ### commands manually created ###
-    op.add_column('views', 
+    op.add_column('views',
         sa.Column('type', sa.String(), nullable=False, server_default='grid')
     )
     # If we want to ensure existing rows (if any) get this default,
     # sometimes an explicit update is needed if server_default only applies to new rows
-    # For PostgreSQL, server_default should handle this for new rows, 
+    # For PostgreSQL, server_default should handle this for new rows,
     # and for existing rows, they would be NULL without an update.
     # To ensure non-nullability on existing rows:
     op.execute("UPDATE views SET type = 'grid' WHERE type IS NULL")
     # Then, if the column was created as nullable and needs to be altered to nullable=False after update:
-    # op.alter_column('views', 'type', nullable=False) 
+    # op.alter_column('views', 'type', nullable=False)
     # However, by defining nullable=False with server_default from start, it should be fine for new tables
     # For existing tables, the above UPDATE + ALTER might be safer.
     # For this case, assuming the nullable=False and server_default='grid' is sufficient for new tables,

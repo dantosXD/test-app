@@ -33,7 +33,7 @@ const useAuthStore = create(
             // This part depends on how much user data you persist.
             // Let's assume for now that if a token exists, we might need to re-verify/fetch user.
             // A simple approach: if token exists, assume isAuthenticated true, but user might be minimal.
-            set({ isAuthenticated: true }); 
+            set({ isAuthenticated: true });
           }
         }
       }

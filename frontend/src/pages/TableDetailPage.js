@@ -2,12 +2,12 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import useAppStore from '../store/appStore';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
-import EditableCell from '../components/EditableCell'; 
+import EditableCell from '../components/EditableCell';
 import useWebSocket from '../hooks/useWebSocket';
-import KanbanBoard from '../components/KanbanView/KanbanBoard'; 
+import KanbanBoard from '../components/KanbanView/KanbanBoard';
 import CalendarViewComponent from '../components/CalendarView/CalendarView';
 import GalleryViewComponent from '../components/GalleryView/GalleryView';
-import fileService from '../services/fileService'; 
+import fileService from '../services/fileService';
 import tableService from '../services/tableService'; // For CSV import/export
 import apiClient from '../services/api'; // For direct blob fetch for export
 
@@ -15,16 +15,16 @@ const TableDetailPage = () => {
   const { tableId } = useParams();
   const navigate = useNavigate();
   const store = useAppStore();
-  const { /* ... existing store destructuring ... */ 
+  const { /* ... existing store destructuring ... */
     currentTableId, fields, isLoadingFields, errorFields, records, isLoadingRecords, errorRecords,
     setCurrentTableId, addField, addRecord, updateRecordValue, currentBaseId,
-    handleWebSocketRecordCreated, handleWebSocketRecordUpdated, handleWebSocketRecordDeleted, 
-    currentSort, currentFilters, setSort, setFilter, 
+    handleWebSocketRecordCreated, handleWebSocketRecordUpdated, handleWebSocketRecordDeleted,
+    currentSort, currentFilters, setSort, setFilter,
     views, currentViewId, isLoadingViews, errorViews, loadView, saveCurrentView, deleteView,
     tablePermissions, fetchRecords // Added fetchRecords for re-fetching after import
   } = store;
 
-  const tableName = `Table ${tableId}`; 
+  const tableName = `Table ${tableId}`;
 
   // ... (all other state variables as before) ...
   const [newFieldName, setNewFieldName] = useState(''); /* ... */
@@ -36,12 +36,12 @@ const TableDetailPage = () => {
 
   const fieldTypes = [ /* ... */ ];
   const viewTypesForSelect = ['grid', 'form', 'kanban', 'calendar', 'gallery'];
-  const kanbanCompatibleFieldTypes = [/* ... */]; 
-  const dateCompatibleFieldTypes = [/* ... */]; 
+  const kanbanCompatibleFieldTypes = [/* ... */];
+  const dateCompatibleFieldTypes = [/* ... */];
   const attachmentCompatibleFieldTypes = ['attachment'];
 
   // --- Callbacks and Effects (mostly unchanged) ---
-  const handleWebSocketMessage = useCallback((message) => { /* ... */ }, [/* ... */]); 
+  const handleWebSocketMessage = useCallback((message) => { /* ... */ }, [/* ... */]);
   const { isConnected: wsIsConnected, error: wsError } = useWebSocket(currentTableId ? tableId : null, handleWebSocketMessage);
   useEffect(() => { /* ... setCurrentTableId logic ... */ }, [/* ... */]);
   const currentLoadedView = useMemo(() => views.find(v => v.id === currentViewId), [currentViewId, views]);
@@ -49,12 +49,12 @@ const TableDetailPage = () => {
   const columns = useMemo(() => { /* ... */ }, [/* ... */]);
   const tableData = useMemo(() => { /* ... */ }, [records, fields]);
   const table = useReactTable({ data: tableData, columns, getCoreRowModel: getCoreRowModel(), meta: { apiBaseUrl: "http://localhost:8000", updateData: (recordId, fieldId, value) => { /* ... */ }}});
-  const handleCreateField = async (e) => { /* ... */ }; 
+  const handleCreateField = async (e) => { /* ... */ };
   const handleNewRecordInputChange = (fieldId, value, fieldType) => { /* ... */ };
   const handleCreateRecord = async (e) => { /* ... */ };
-  const handleSaveView = async () => { /* ... */ }; 
+  const handleSaveView = async () => { /* ... */ };
   const openSaveViewModal = () => { /* ... */ };
-  const handleGrantPermission = async () => { /* ... */ }; 
+  const handleGrantPermission = async () => { /* ... */ };
   const handleRevokePermission = async (targetUserId) => { /* ... */ };
 
   const handleExportCsv = async () => {
@@ -118,7 +118,7 @@ const TableDetailPage = () => {
   return (
     <div className="container" style={{ padding: '2rem' }}>
       {/* ... Header, Fields Definition, Add New Field Form ... */}
-      
+
       {/* View Management UI - Add Export/Import buttons */}
       <div style={{ margin: '1rem 0', padding: '1rem', border: '1px solid #ddd', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
         {/* ... existing View Management content (dropdown, save/delete view, permissions) ... */}
@@ -158,7 +158,7 @@ const TableDetailPage = () => {
             )}
         </div>
       )}
-      
+
       {/* Conditional rendering for Grid, Form, Kanban or Calendar View Info */}
       {/* ... */}
       {/* Add New Record Form (conditionally hidden) */}

@@ -21,7 +21,7 @@ def create_user(db: Session, user: schemas.UserCreate): # ... (as before)
     db.add(db_user); db.commit(); db.refresh(db_user)
     return db_user
 
-# Base CRUD 
+# Base CRUD
 def create_base(db: Session, base: schemas.BaseCreate, owner_id: int): # ... (as before)
     db_base = models.Base(**base.model_dump(), owner_id=owner_id)
     db.add(db_base); db.commit(); db.refresh(db_base)
@@ -142,7 +142,7 @@ def _map_value_to_record_value_columns(field_type: str, value: Any) -> dict: # .
     elif field_type == 'boolean':
         if isinstance(value, str): return {'value_boolean': value.lower() == 'true'}
         return {'value_boolean': bool(value) if value is not None else None}
-    else: 
+    else:
         if isinstance(value, (list, dict)): return {'value_json': value}
         return {'value_text': str(value) if value is not None else None}
 
@@ -300,7 +300,7 @@ def update_view(db: Session, view_id: int, view_data: schemas.ViewUpdate, user_i
     db_view = get_view(db, view_id=view_id, user_id=user_id)
     if view_data.name is not None: db_view.name = view_data.name
     if view_data.type is not None: db_view.type = view_data.type
-    
+
     if view_data.config is not None:
         current_type = view_data.type or db_view.type
         config = view_data.config
@@ -329,7 +329,7 @@ def update_view(db: Session, view_id: int, view_data: schemas.ViewUpdate, user_i
         updated_config_data = view_data.config.model_dump(exclude_unset=True)
         merged_config = {**existing_config, **updated_config_data}
         db_view.config = merged_config # Store the merged, validated config
-    
+
     db.commit(); db.refresh(db_view)
     return db_view
 
@@ -337,7 +337,7 @@ def get_view(db: Session, view_id: int, user_id: int):
     db_view = db.query(models.View).filter(models.View.id == view_id).first()
     if not db_view: raise HTTPException(status_code=404, detail="View not found")
     permission = get_user_table_permission_level(db, table_id=db_view.table_id, user_id=user_id)
-    if not permission or permission < PermissionLevel.VIEWER : 
+    if not permission or permission < PermissionLevel.VIEWER :
         raise HTTPException(status_code=403, detail="User does not have access to this view's table")
     # If view owner is different from current_user, but current_user has table access, they can see it.
     # If stricter view ownership is needed (only owner of view can fetch it directly), add:
@@ -346,7 +346,7 @@ def get_view(db: Session, view_id: int, user_id: int):
 
 def get_views_by_table(db: Session, table_id: int, user_id: int):
     permission = get_user_table_permission_level(db, table_id=table_id, user_id=user_id)
-    if not permission or permission < PermissionLevel.VIEWER: 
+    if not permission or permission < PermissionLevel.VIEWER:
         raise HTTPException(status_code=403, detail="Not enough permissions to access this table's views")
     return db.query(models.View).filter(models.View.table_id == table_id).all() # Show all views for table if user has table access
 
@@ -391,7 +391,7 @@ def revoke_table_permission(db: Session, table_id: int, target_user_id: int, cur
 
 def get_user_table_permission_level(db: Session, table_id: int, user_id: int) -> Optional[PermissionLevel]: # ... (as before)
     table = db.query(models.Table).filter_by(id=table_id).first()
-    if not table: return None 
+    if not table: return None
     if table.base.owner_id == user_id: return PermissionLevel.ADMIN
     permission = db.query(models.TablePermission).filter_by(table_id=table_id, user_id=user_id).first()
     if permission: return PermissionLevel(permission.permission_level)

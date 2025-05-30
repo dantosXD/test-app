@@ -36,7 +36,7 @@ const CalendarViewComponent = ({ records, viewConfig }) => {
       const startDateValue = recordValuesMap[dateFieldId];
       const endDateValue = endDateFieldId ? recordValuesMap[endDateFieldId] : null;
       const titleValueContainer = recordValuesMap[titleFieldId];
-      
+
       let title = `Record ${record.id}`; // Default title
       if (titleValueContainer) {
         title = titleValueContainer.value_text || titleValueContainer.value_number || titleValueContainer.value_json || title;
@@ -46,12 +46,12 @@ const CalendarViewComponent = ({ records, viewConfig }) => {
       if (startDateValue) {
         start = startDateValue.value_datetime || startDateValue.value_date || startDateValue.value_text; // Adapt based on how dates are stored
       }
-      
+
       let end = null;
       if (endDateField && endDateValue) {
         end = endDateValue.value_datetime || endDateValue.value_date || endDateValue.value_text;
       }
-      
+
       // Determine if allDay event
       // FullCalendar typically expects ISO strings or Date objects.
       // If only date (no time) is stored, it's an allDay event.
@@ -109,7 +109,7 @@ const CalendarViewComponent = ({ records, viewConfig }) => {
   if (!viewConfig || !viewConfig.date_field_id || !viewConfig.event_title_field_id) {
     return <div className="container error-message">Calendar view is not configured correctly. Please set Date Field and Event Title Field.</div>;
   }
-  
+
   return (
     <div className="calendar-container" style={{marginTop: '20px', backgroundColor: 'white', padding: '15px', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
       <FullCalendar

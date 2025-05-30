@@ -70,7 +70,7 @@ This command will apply all pending migrations found in `alembic/versions/`. New
 To run the FastAPI development server, ensure you are in the `backend` directory:
 
 ```bash
-uvicorn main:app --reload 
+uvicorn main:app --reload
 ```
 The `main:app` refers to the `app` FastAPI instance in your `backend/main.py` file. The `--reload` flag enables auto-reloading on code changes.
 

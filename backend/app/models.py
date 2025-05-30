@@ -11,12 +11,12 @@ class User(Base):
     password_hash = Column(String, nullable=False)
 
     bases = relationship("Base", back_populates="owner")
-    tables = relationship("Table", back_populates="owner") 
-    fields = relationship("Field", back_populates="owner") 
-    records = relationship("Record", back_populates="owner") 
-    record_values = relationship("RecordValue", back_populates="owner") 
-    views = relationship("View", back_populates="owner") 
-    record_links = relationship("RecordLink", back_populates="owner") 
+    tables = relationship("Table", back_populates="owner")
+    fields = relationship("Field", back_populates="owner")
+    records = relationship("Record", back_populates="owner")
+    record_values = relationship("RecordValue", back_populates="owner")
+    views = relationship("View", back_populates="owner")
+    record_links = relationship("RecordLink", back_populates="owner")
     table_permissions = relationship("TablePermission", back_populates="user") # User.table_permissions
 
 class Base(Base):
@@ -37,11 +37,11 @@ class Table(Base):
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     name = Column(String, nullable=False)
 
-    base = relationship("Base", back_populates="tables") 
-    owner = relationship("User", back_populates="tables") 
-    fields = relationship("Field", back_populates="table", cascade="all, delete-orphan") 
+    base = relationship("Base", back_populates="tables")
+    owner = relationship("User", back_populates="tables")
+    fields = relationship("Field", back_populates="table", cascade="all, delete-orphan")
     records = relationship("Record", back_populates="table", cascade="all, delete-orphan")
-    views = relationship("View", back_populates="table", cascade="all, delete-orphan") 
+    views = relationship("View", back_populates="table", cascade="all, delete-orphan")
     user_permissions = relationship("TablePermission", back_populates="table", cascade="all, delete-orphan") # Table.user_permissions
 
 class Field(Base):
@@ -54,9 +54,9 @@ class Field(Base):
     type = Column(String, nullable=False)
     options = Column(JSON, nullable=True)
 
-    table = relationship("Table", back_populates="fields") 
-    owner = relationship("User", back_populates="fields") 
-    record_values = relationship("RecordValue", back_populates="field", cascade="all, delete-orphan") 
+    table = relationship("Table", back_populates="fields")
+    owner = relationship("User", back_populates="fields")
+    record_values = relationship("RecordValue", back_populates="field", cascade="all, delete-orphan")
     record_links = relationship("RecordLink", foreign_keys="RecordLink.source_field_id", back_populates="source_field", cascade="all, delete-orphan")
 
 class Record(Base):
@@ -68,9 +68,9 @@ class Record(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    table = relationship("Table", back_populates="records") 
-    owner = relationship("User", back_populates="records") 
-    values = relationship("RecordValue", back_populates="record", cascade="all, delete-orphan") 
+    table = relationship("Table", back_populates="records")
+    owner = relationship("User", back_populates="records")
+    values = relationship("RecordValue", back_populates="record", cascade="all, delete-orphan")
     initiated_links = relationship("RecordLink", foreign_keys="RecordLink.source_record_id", back_populates="source_record", cascade="all, delete-orphan")
     linked_to_this_record = relationship("RecordLink", foreign_keys="RecordLink.linked_record_id", back_populates="linked_record", cascade="all, delete-orphan")
 
@@ -81,16 +81,16 @@ class RecordValue(Base):
     record_id = Column(Integer, ForeignKey("records.id"), nullable=False, index=True)
     field_id = Column(Integer, ForeignKey("fields.id"), nullable=False, index=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    
+
     value_text = Column(Text, nullable=True)
     value_number = Column(Float, nullable=True)
     value_boolean = Column(Boolean, nullable=True)
     value_datetime = Column(DateTime(timezone=True), nullable=True)
     value_json = Column(JSON, nullable=True)
 
-    record = relationship("Record", back_populates="values") 
-    field = relationship("Field", back_populates="record_values") 
-    owner = relationship("User", back_populates="record_values") 
+    record = relationship("Record", back_populates="values")
+    field = relationship("Field", back_populates="record_values")
+    owner = relationship("User", back_populates="record_values")
 
     __table_args__ = (
         UniqueConstraint('record_id', 'field_id', name='uq_record_value_record_field'), # Added unique constraint
@@ -101,10 +101,10 @@ class View(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String, nullable=False)
-    type = Column(String, default='grid', nullable=False) 
+    type = Column(String, default='grid', nullable=False)
     table_id = Column(Integer, ForeignKey("tables.id"), nullable=False, index=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    config = Column(JSON, nullable=False) 
+    config = Column(JSON, nullable=False)
 
     owner = relationship("User", back_populates="views")
     table = relationship("Table", back_populates="views")

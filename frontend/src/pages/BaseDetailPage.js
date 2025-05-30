@@ -17,9 +17,9 @@ const BaseDetailPage = () => {
     // setCurrentTableId // Not used directly here, but in table click
   } = useAppStore();
 
-  const base = useAppStore(state => state.tables.length > 0 && state.currentBaseId === parseInt(baseId) ? 
+  const base = useAppStore(state => state.tables.length > 0 && state.currentBaseId === parseInt(baseId) ?
     { id: state.currentBaseId, name: "Base " + state.currentBaseId } : null // Placeholder for base name
-  ); 
+  );
   // Ideally, fetch base details (name) separately or pass from dashboard. For now, use ID.
   // Or find it from a list of bases if that's stored globally.
   // For this example, we'll just display "Base [ID]" or try to find it if bases were stored from dashboard.
@@ -49,7 +49,7 @@ const BaseDetailPage = () => {
     // setCurrentTableId(tableId); // This will be called by store when navigating
     navigate(`/tables/${tableId}`);
   };
-  
+
   // Find the actual base name if possible (e.g., from a list of all bases if fetched in dashboard)
   // This example assumes base name is not critical or would be fetched separately.
   // We can use a placeholder name for now.
@@ -62,7 +62,7 @@ const BaseDetailPage = () => {
   if (errorTables) {
     return <div className="container" style={{ color: 'red' }}>Error loading tables: {errorTables}</div>;
   }
-  
+
   return (
     <div className="container" style={{ padding: '2rem' }}>
       <h2>{currentBaseName}</h2>
@@ -70,10 +70,10 @@ const BaseDetailPage = () => {
       {tables.length > 0 ? (
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {tables.map((table) => (
-            <li 
+            <li
               key={table.id}
               onClick={() => handleTableClick(table.id)}
-              style={{ 
+              style={{
                 padding: '10px', border: '1px solid #ddd', marginBottom: '5px', cursor: 'pointer',
                 borderRadius: '4px', backgroundColor: '#f9f9f9'
               }}

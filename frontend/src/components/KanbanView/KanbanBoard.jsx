@@ -6,7 +6,7 @@ import KanbanColumn from './KanbanColumn';
 
 const KanbanBoard = ({ records: initialRecords, viewConfig }) => {
   const { fields, updateRecordValue, currentTableId } = useAppStore();
-  
+
   const stackByField = useMemo(() => fields.find(f => f.id === viewConfig.stack_by_field_id), [fields, viewConfig.stack_by_field_id]);
 
   // State for tasks, organized by column ID. This needs to be derived from initialRecords and viewConfig.
@@ -39,7 +39,7 @@ const KanbanBoard = ({ records: initialRecords, viewConfig }) => {
       });
       columnKeys = Array.from(uniqueValues);
     }
-    
+
     // Ensure "Uncategorized" is an option if records might fall into it
     const hasUncategorizedPotential = initialRecords.some(record => {
         const recordValueContainer = record.values.find(rv => rv.field_id === stackByField.id);
@@ -69,7 +69,7 @@ const KanbanBoard = ({ records: initialRecords, viewConfig }) => {
         let rawValue = null;
         if (stackByField.type === 'text' || stackByField.type === 'singleSelect') rawValue = recordValueContainer.value_text;
         else if (stackByField.type === 'boolean') rawValue = recordValueContainer.value_boolean !== null ? String(recordValueContainer.value_boolean) : null;
-        
+
         if (rawValue !== null && rawValue !== undefined && String(rawValue).trim() !== "") {
             columnKeyValue = String(rawValue);
         }
@@ -143,7 +143,7 @@ const KanbanBoard = ({ records: initialRecords, viewConfig }) => {
           }
         }
       }
-      
+
       if (!targetColumnId) return prevTasks; // Should not happen if over a valid droppable
 
       if (sourceColumnId === targetColumnId) {
@@ -162,10 +162,10 @@ const KanbanBoard = ({ records: initialRecords, viewConfig }) => {
         const sourceItems = [...newTasks[sourceColumnId]];
         const destItems = [...newTasks[targetColumnId]];
         const activeIndexInSource = sourceItems.findIndex(t => String(t.id) === activeId);
-        
+
         // Remove from source
         sourceItems.splice(activeIndexInSource, 1);
-        
+
         // Add to destination (at specific index if dropped on item, else at end)
         let destIndex = destItems.length; // Default to end
         const overItemIndexInDest = destItems.findIndex(t => String(t.id) === overId);
@@ -174,7 +174,7 @@ const KanbanBoard = ({ records: initialRecords, viewConfig }) => {
         }
 
         destItems.splice(destIndex, 0, activeItem);
-        
+
         newTasks = { ...newTasks, [sourceColumnId]: sourceItems, [targetColumnId]: destItems };
 
         // Update backend
@@ -185,7 +185,7 @@ const KanbanBoard = ({ records: initialRecords, viewConfig }) => {
           else if (targetColumnId.toLowerCase() === 'false') newStackValue = false;
           else newStackValue = null;
         } else if (targetColumnId === "Uncategorized" && (stackByField.type === 'singleSelect' || stackByField.type === 'text')) {
-          newStackValue = null; 
+          newStackValue = null;
         }
         // For numeric stackByField, convert targetColumnId back to number if needed
         if (stackByField.type === 'number') {
@@ -198,7 +198,7 @@ const KanbanBoard = ({ records: initialRecords, viewConfig }) => {
       return newTasks;
     });
   };
-  
+
   if (!stackByField) {
     return <div className="container error-message" style={{padding: '1rem'}}>Kanban configuration error: 'Stack By' Field ID ({viewConfig.stack_by_field_id}) is invalid or not found.</div>;
   }

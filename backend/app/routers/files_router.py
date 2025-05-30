@@ -35,13 +35,13 @@ async def upload_file(file: UploadFile = File(...)):
 
     original_filename = file.filename
     content_type = file.content_type
-    
+
     # Generate a unique filename to prevent overwrites and handle special characters
     file_extension = os.path.splitext(original_filename)[1]
     unique_filename = f"{uuid.uuid4()}{file_extension}"
-    
+
     file_path = os.path.join(UPLOAD_DIRECTORY, unique_filename)
-    
+
     size = 0
     try:
         with open(file_path, "wb") as buffer:
@@ -72,7 +72,7 @@ async def download_file(filename: str):
     file_path = os.path.join(UPLOAD_DIRECTORY, filename)
     if not os.path.isfile(file_path): # Security: Check it's a file and not e.g. a directory traversal attempt
         raise HTTPException(status_code=404, detail="File not found")
-    
+
     # Determine media type based on filename extension if needed, or let browser infer.
     # FileResponse attempts to guess media_type.
     return FileResponse(path=file_path, filename=filename) # filename suggests download name to browser

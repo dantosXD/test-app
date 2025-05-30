@@ -57,7 +57,7 @@ const PublicFormPage = () => {
         return;
       }
     }
-    
+
     // Prepare data for submission (ensure field IDs are strings if backend expects that for Dict keys)
     const submissionPayload = { ...formData };
     // Potentially convert types here if needed, e.g., for numbers, booleans
@@ -97,7 +97,7 @@ const PublicFormPage = () => {
   if (error && !formConfig) { // Show error if config loading failed
     return <div className="container error-message" style={{textAlign: 'center', paddingTop: '50px'}}>Error: {error}</div>;
   }
-  
+
   if (!formConfig) { // Should be covered by isLoading or error, but as a fallback
     return <div className="container" style={{textAlign: 'center', paddingTop: '50px'}}>Form not found or not available.</div>;
   }
@@ -106,7 +106,7 @@ const PublicFormPage = () => {
     <div className="container" style={{ maxWidth: '700px', margin: '2rem auto', padding: '2rem', border: '1px solid #eee', borderRadius: '8px', backgroundColor: '#fff' }}>
       <h2 style={{textAlign: 'center'}}>{formConfig.title || formConfig.view_name}</h2>
       {formConfig.description && <p style={{textAlign: 'center', marginBottom: '2rem'}}>{formConfig.description}</p>}
-      
+
       {successMessage && <div style={{padding: '1rem', marginBottom: '1rem', backgroundColor: 'lightgreen', color: 'darkgreen', border: '1px solid green', borderRadius: '4px'}}>{successMessage}</div>}
       {error && !successMessage && <div className="error-message" style={{padding: '1rem', marginBottom: '1rem'}}>{error}</div>}
 
@@ -118,7 +118,7 @@ const PublicFormPage = () => {
               {field.label} {field.is_required && <span style={{ color: 'red' }}>*</span>}
             </label>
             {field.help_text && <small style={{ display: 'block', marginBottom: '0.5rem', color: '#555' }}>{field.help_text}</small>}
-            
+
             {field.type === 'singleSelect' && field.options?.choices ? (
               <select
                 id={`form-field-${field.id}`}
