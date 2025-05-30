@@ -78,13 +78,16 @@ def test_evaluate_missing_field_id_placeholder():
     # `get_field_value_from_map` returns None if field_id not in map, which becomes "None" string.
     # So formula becomes e.g. "10 + None" which should lead to TypeError in eval.
     result = evaluate_formula("{1} + {99}", mock_record_values_map_valid, mock_field_defs) # Field ID 99 doesn't exist
-    assert "Error: Type error" in result or "Error: Formula evaluation failed" in result # More specific error would be better
+    # Updated assertion based on FormulaError raised by modified evaluate_formula
+    assert "Field ID {99} not found, has no value, or is not suitable for formula." in result
 
 def test_evaluate_operation_on_text_field():
     # Current engine's `get_field_value_from_map` for text returns string, then `str(float(value))`
     # would fail if text is not number-like.
+    # The modified engine's replace_placeholder_value will str(value), so "10 + hello".
+    # This should be caught by the invalid character regex.
     result = evaluate_formula("{1} + {3}", mock_record_values_map_valid, mock_field_defs) # {3} is "hello"
-    assert "Error: Type error" in result or "Error: Formula evaluation failed" in result
+    assert "Error: Invalid characters in formula" in result
 
 def test_evaluate_boolean_in_arithmetic():
     # Booleans are converted to float (1.0 or 0.0) by get_field_value_from_map
@@ -105,14 +108,14 @@ def test_evaluate_field_with_no_value():
         # Field 2 is missing a value
     }
     result = evaluate_formula("{1} + {2}", mock_record_values_map_missing, mock_field_defs)
-    # get_field_value_from_map returns None, which becomes "None" string, then TypeError from eval
-    assert "Error: Type error" in result or "Error: Formula evaluation failed" in result
+    # get_field_value_from_map returns None, which raises FormulaError in the modified engine
+    assert "Field ID {2} not found, has no value, or is not suitable for formula." in result
 
 def test_evaluate_field_not_in_defs():
     # Field ID 6 is in formula but not in mock_field_defs
     result = evaluate_formula("{1} + {6}", mock_record_values_map_valid, mock_field_defs)
-    # get_field_value_from_map has `field_def is None` check, returns None, then TypeError
-    assert "Error: Type error" in result or "Error: Formula evaluation failed" in result
+    # get_field_value_from_map returns None, raising FormulaError in the modified engine
+    assert "Field ID {6} not found, has no value, or is not suitable for formula." in result
 
 # The prompt test `test_evaluate_missing_field_id` was:
 # `assert "Error: Field ID {5} not found" in error`

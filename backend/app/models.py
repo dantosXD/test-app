@@ -1,26 +1,26 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, JSON, Text, Float, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from .database import Base
+from .database import Base as DeclarativeBase # Use an alias for clarity
 
-class User(Base):
+class User(DeclarativeBase):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
 
-    bases = relationship("Base", back_populates="owner")
+    bases = relationship("AppBase", back_populates="owner") # Changed "Base" to "AppBase"
     tables = relationship("Table", back_populates="owner")
     fields = relationship("Field", back_populates="owner")
     records = relationship("Record", back_populates="owner")
     record_values = relationship("RecordValue", back_populates="owner")
     views = relationship("View", back_populates="owner")
     record_links = relationship("RecordLink", back_populates="owner")
-    table_permissions = relationship("TablePermission", back_populates="user") # User.table_permissions
+    table_permissions = relationship("TablePermission", back_populates="user")
 
-class Base(Base):
-    __tablename__ = "bases"
+class AppBase(DeclarativeBase): # Renamed from Base to AppBase
+    __tablename__ = "app_bases" # Changed tablename to avoid conflict if 'bases' was problematic
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
@@ -29,22 +29,22 @@ class Base(Base):
     owner = relationship("User", back_populates="bases")
     tables = relationship("Table", back_populates="base", cascade="all, delete-orphan")
 
-class Table(Base):
+class Table(DeclarativeBase):
     __tablename__ = "tables"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    base_id = Column(Integer, ForeignKey("bases.id"), nullable=False, index=True)
+    base_id = Column(Integer, ForeignKey("app_bases.id"), nullable=False, index=True) # Changed from "bases.id"
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     name = Column(String, nullable=False)
 
-    base = relationship("Base", back_populates="tables")
+    base = relationship("AppBase", back_populates="tables") # Changed from "Base"
     owner = relationship("User", back_populates="tables")
     fields = relationship("Field", back_populates="table", cascade="all, delete-orphan")
     records = relationship("Record", back_populates="table", cascade="all, delete-orphan")
     views = relationship("View", back_populates="table", cascade="all, delete-orphan")
-    user_permissions = relationship("TablePermission", back_populates="table", cascade="all, delete-orphan") # Table.user_permissions
+    user_permissions = relationship("TablePermission", back_populates="table", cascade="all, delete-orphan")
 
-class Field(Base):
+class Field(DeclarativeBase):
     __tablename__ = "fields"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -59,7 +59,7 @@ class Field(Base):
     record_values = relationship("RecordValue", back_populates="field", cascade="all, delete-orphan")
     record_links = relationship("RecordLink", foreign_keys="RecordLink.source_field_id", back_populates="source_field", cascade="all, delete-orphan")
 
-class Record(Base):
+class Record(DeclarativeBase):
     __tablename__ = "records"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -74,7 +74,7 @@ class Record(Base):
     initiated_links = relationship("RecordLink", foreign_keys="RecordLink.source_record_id", back_populates="source_record", cascade="all, delete-orphan")
     linked_to_this_record = relationship("RecordLink", foreign_keys="RecordLink.linked_record_id", back_populates="linked_record", cascade="all, delete-orphan")
 
-class RecordValue(Base):
+class RecordValue(DeclarativeBase):
     __tablename__ = "record_values"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -93,10 +93,10 @@ class RecordValue(Base):
     owner = relationship("User", back_populates="record_values")
 
     __table_args__ = (
-        UniqueConstraint('record_id', 'field_id', name='uq_record_value_record_field'), # Added unique constraint
+        UniqueConstraint('record_id', 'field_id', name='uq_record_value_record_field'),
     )
 
-class View(Base):
+class View(DeclarativeBase):
     __tablename__ = "views"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -109,7 +109,7 @@ class View(Base):
     owner = relationship("User", back_populates="views")
     table = relationship("Table", back_populates="views")
 
-class RecordLink(Base):
+class RecordLink(DeclarativeBase):
     __tablename__ = "record_links"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -118,22 +118,22 @@ class RecordLink(Base):
     linked_record_id = Column(Integer, ForeignKey("records.id"), nullable=False, index=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
 
-    source_record = relationship("Record", foreign_keys=[RecordLink.source_record_id], back_populates="initiated_links")
-    linked_record = relationship("Record", foreign_keys=[RecordLink.linked_record_id], back_populates="linked_to_this_record")
-    source_field = relationship("Field", foreign_keys=[RecordLink.source_field_id], back_populates="record_links")
+    source_record = relationship("Record", foreign_keys="RecordLink.source_record_id", back_populates="initiated_links")
+    linked_record = relationship("Record", foreign_keys="RecordLink.linked_record_id", back_populates="linked_to_this_record")
+    source_field = relationship("Field", foreign_keys="RecordLink.source_field_id", back_populates="record_links")
     owner = relationship("User", back_populates="record_links")
 
     __table_args__ = (
         UniqueConstraint('source_record_id', 'source_field_id', 'linked_record_id', name='uq_record_link_constraint'),
     )
 
-class TablePermission(Base):
+class TablePermission(DeclarativeBase):
     __tablename__ = "table_permissions"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     table_id = Column(Integer, ForeignKey("tables.id"), nullable=False, index=True)
-    permission_level = Column(String, nullable=False) # Stores PermissionLevel enum values as strings
+    permission_level = Column(String, nullable=False)
 
     user = relationship("User", back_populates="table_permissions")
     table = relationship("Table", back_populates="user_permissions")

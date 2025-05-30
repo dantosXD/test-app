@@ -27,21 +27,21 @@ def upgrade() -> None:
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
     op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
 
-    op.create_table('bases',
+    op.create_table('app_bases',  # Renamed from 'bases'
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
         sa.Column('owner_id', sa.Integer(), nullable=False),
         sa.Column('name', sa.String(), nullable=False),
         sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),
         sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_bases_id'), 'bases', ['id'], unique=False)
-    op.create_index(op.f('ix_bases_owner_id'), 'bases', ['owner_id'], unique=False)
+    op.create_index(op.f('ix_app_bases_id'), 'app_bases', ['id'], unique=False) # Renamed index
+    op.create_index(op.f('ix_app_bases_owner_id'), 'app_bases', ['owner_id'], unique=False) # Renamed index
 
     op.create_table('tables',
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
         sa.Column('base_id', sa.Integer(), nullable=False),
         sa.Column('name', sa.String(), nullable=False),
-        sa.ForeignKeyConstraint(['base_id'], ['bases.id'], ),
+        sa.ForeignKeyConstraint(['base_id'], ['app_bases.id'], ), # Updated ForeignKey
         sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_tables_id'), 'tables', ['id'], unique=False)
@@ -108,9 +108,9 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_tables_id'), table_name='tables')
     op.drop_table('tables')
 
-    op.drop_index(op.f('ix_bases_owner_id'), table_name='bases')
-    op.drop_index(op.f('ix_bases_id'), table_name='bases')
-    op.drop_table('bases')
+    op.drop_index(op.f('ix_app_bases_owner_id'), table_name='app_bases') # Renamed index
+    op.drop_index(op.f('ix_app_bases_id'), table_name='app_bases') # Renamed index
+    op.drop_table('app_bases') # Renamed table
 
     op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_index(op.f('ix_users_email'), table_name='users')

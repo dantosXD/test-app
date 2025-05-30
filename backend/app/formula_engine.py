@@ -96,7 +96,20 @@ def evaluate_formula(formula_string: str, record_values_map: dict, field_defs_ma
     # For simplicity, let's assume formula string uses actual IDs: e.g., "{1} + {2}"
 
     # Simpler placeholder: {ID}, e.g., "{123} + {456}"
-    processed_formula = re.sub(r"\{(\d+)\}", lambda m: str(get_field_value_from_map(f"field_{m.group(1)}", record_values_map, field_defs_map) or 0), formula_string)
+    # Modified placeholder replacement to handle missing values by raising an error
+    # instead of defaulting to 0, to make missing fields explicit errors.
+    def replace_placeholder_value(match):
+        field_id_str = match.group(1) # The numeric ID from placeholder {ID}
+        value = get_field_value_from_map(f"field_{field_id_str}", record_values_map, field_defs_map)
+        if value is None:
+            # Raise a specific error that can be caught by the main try-except block
+            raise FormulaError(f"Field ID {{{field_id_str}}} not found, has no value, or is not suitable for formula.")
+        return str(value) # Ensure it's a string for re.sub
+
+    try:
+        processed_formula = re.sub(r"\{(\d+)\}", replace_placeholder_value, formula_string)
+    except FormulaError as e: # Catch error from placeholder replacement
+        return str(e) # Return the custom error message directly
 
     # Security: Validate the processed_formula to ensure it only contains allowed characters/operations
     # This is a very basic check, a proper tokenizer/parser is better.
@@ -125,18 +138,22 @@ def evaluate_formula(formula_string: str, record_values_map: dict, field_defs_ma
         if isinstance(result, (int, float)):
             return result
         else:
+            # This case might be hit if eval results in something non-numeric
+            # that wasn't caught as a TypeError during evaluation.
             return "Error: Formula result is not a number"
 
     except ZeroDivisionError:
         return "Error: Division by zero"
-    except SyntaxError:
+    except SyntaxError: # Includes cases where "None" string might cause issues if not handled before
         return "Error: Syntax error in formula"
-    except TypeError:
+    except TypeError: # Catch type errors from operations like "10 + 'text'" if not caught by regex
         return "Error: Type error in formula (e.g., mixing text and numbers)"
+    except FormulaError as fe: # Catch our custom error from placeholder replacement
+        return str(fe)
     except Exception as e:
         # Log the full error for debugging, but return a generic error to user
         print(f"Formula evaluation error: {e} for formula '{processed_formula}'")
         return "Error: Formula evaluation failed"
 
-class FormulaError(Exception):
+class FormulaError(Exception): # Custom exception for formula-specific issues
     pass

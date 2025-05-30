@@ -14,18 +14,33 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Import settings once globally
-from app.config import settings
+# Determine database URL based on TESTING environment variable
+import os
+# Import the Settings class, not the instance, to avoid premature .env loading if not desired
+from app.config import Settings
+
+IS_TESTING = os.environ.get("TESTING", "false").lower() == "true"
+
+if IS_TESTING:
+    # Get DB URL from env var set by pytest.ini for tests
+    db_url_for_alembic = os.environ.get("DATABASE_URL", "sqlite:///./test.db")
+    # print(f"ALEMBIC ENV (TESTING): Using DATABASE_URL: {db_url_for_alembic}")
+else:
+    # For normal operations, instantiate settings to load from .env or defaults
+    app_settings = Settings()
+    db_url_for_alembic = app_settings.DATABASE_URL
+    # print(f"ALEMBIC ENV (NORMAL): Using DATABASE_URL: {db_url_for_alembic}")
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
     """
-    from app.database import Base
-    import app.models
+    from app.database import Base # This is DeclarativeBase from database.py
+    import app.models # Ensure all models are imported so Base.metadata is populated
     context_target_metadata = Base.metadata
 
     context.configure(
-        url=settings.DATABASE_URL,
+        url=db_url_for_alembic, # Use the determined URL
         target_metadata=context_target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -41,12 +56,12 @@ def run_migrations_offline() -> None:
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode.
     """
-    from app.database import Base
-    import app.models
+    from app.database import Base # This is DeclarativeBase
+    import app.models # Ensure all models are imported
     context_target_metadata = Base.metadata
 
     connectable = engine_from_config(
-        {"sqlalchemy.url": settings.DATABASE_URL},
+        {"sqlalchemy.url": db_url_for_alembic}, # Use the determined URL
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

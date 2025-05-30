@@ -1,12 +1,13 @@
 import os
 import uuid
-from typing import List
+from typing import List, Optional # Added Optional
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from starlette.responses import FileResponse
 
 from .. import auth, models # For current_user dependency
-from ..config import settings # If you have path settings, otherwise define here
+from ..config import settings
+from .. import schemas # Ensure schemas is imported
 
 router = APIRouter(
     prefix="/files",
@@ -77,5 +78,4 @@ async def download_file(filename: str):
     # FileResponse attempts to guess media_type.
     return FileResponse(path=file_path, filename=filename) # filename suggests download name to browser
 
-# Need to import schemas for FileMetadataResponse
-from .. import schemas
+# Need to import schemas for FileMetadataResponse was at the end, moved to top.

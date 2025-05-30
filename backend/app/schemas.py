@@ -1,5 +1,5 @@
-from pydantic import BaseModel, EmailStr
-from typing import Optional, List, Any
+from pydantic import BaseModel, EmailStr, model_validator # Ensure model_validator is imported if used
+from typing import Optional, List, Any, Dict, Literal # Added Literal, Dict
 from datetime import datetime
 
 # User Schemas

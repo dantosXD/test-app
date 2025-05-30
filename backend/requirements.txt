@@ -7,7 +7,9 @@ pydantic
 python-jose[cryptography]
 passlib[bcrypt]
 python-dotenv
-pydantic-settings # Added missing dependency
+pydantic-settings
+email-validator # For EmailStr validation
+python-multipart # For FastAPI form data (OAuth2PasswordRequestForm)
 pytest
 pytest-cov
 httpx
