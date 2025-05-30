@@ -45,7 +45,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         token_data = schemas.TokenData(email=email)
     except JWTError:
         raise credentials_exception
-    
+
     user = crud.get_user_by_email(db, email=token_data.email)
     if user is None:
         raise credentials_exception
@@ -60,13 +60,13 @@ async def get_current_active_user(current_user: models.User = Depends(get_curren
 from .permission_levels import PermissionLevel # Import Enum
 
 def verify_user_table_access(
-    table_id: int, 
-    db: Session = Depends(get_db), 
+    table_id: int,
+    db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user),
     required_level: PermissionLevel = PermissionLevel.VIEWER # Default to viewer
 ) -> models.Table:
     permission = crud.get_user_table_permission_level(db, table_id=table_id, user_id=current_user.id)
-    
+
     if not permission:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions for this table (no entry)")
 

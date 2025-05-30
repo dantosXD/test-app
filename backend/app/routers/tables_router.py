@@ -79,7 +79,7 @@ from ..permission_levels import PermissionLevel
 def format_value_for_csv(value_obj: Optional[schemas.RecordValue], field_type: str) -> str:
     if not value_obj:
         return ""
-        
+
     if field_type == 'text' or field_type == 'singleSelect' or field_type == 'email' or field_type == 'url' or field_type == 'phoneNumber':
         return value_obj.value_text if value_obj.value_text is not None else ""
     elif field_type == 'number' or field_type == 'count':
@@ -108,7 +108,7 @@ async def export_table_to_csv(
 ):
     # Verify user has at least viewer permission for the table
     permission = crud.get_user_table_permission_level(db, table_id=table_id, user_id=current_user.id)
-    if not permission or permission < PermissionLevel.VIEWER: 
+    if not permission or permission < PermissionLevel.VIEWER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions to export this table")
 
     table = db.query(models.Table).filter(models.Table.id == table_id).first() # No ownership check needed here, covered by permission
@@ -118,7 +118,7 @@ async def export_table_to_csv(
     fields = db.query(models.Field).filter(models.Field.table_id == table_id).order_by(models.Field.id).all()
     # get_records_by_table returns Pydantic models with computed formulas
     # Fetch all records for export, consider pagination/streaming for very large tables in future
-    records_data = crud.get_records_by_table(db, table_id=table_id, user_id=current_user.id, limit=1000000) 
+    records_data = crud.get_records_by_table(db, table_id=table_id, user_id=current_user.id, limit=1000000)
 
     output = io.StringIO()
     writer = csv.writer(output)
@@ -169,7 +169,7 @@ async def import_csv_to_table(
             raise HTTPException(status_code=400, detail="Failed to decode CSV. Please ensure it's UTF-8 or Latin-1 encoded.")
 
     reader = csv.DictReader(csv_data)
-    
+
     table_fields = db.query(models.Field).filter(models.Field.table_id == table_id).all()
     # Map field names to their Field objects for quick lookup and type info
     # For simplicity, assume CSV headers match Field.name exactly (case-sensitive for now)
@@ -182,19 +182,19 @@ async def import_csv_to_table(
     for row_idx, row_dict in enumerate(reader):
         record_values_payload: Dict[int, Any] = {}
         valid_row = True
-        
+
         for header_name, cell_value_str in row_dict.items():
             field = field_map.get(header_name)
             if not field: # Column in CSV not found as a field in the table or is a formula field
                 # Optionally log this or allow ignoring unknown columns
-                continue 
+                continue
 
             # Basic type conversion attempt (more robust validation can be added)
             # crud._map_value_to_record_value_columns expects correctly typed values for some types (like list for multiSelect)
             # For CSV, all values are strings initially.
-            
+
             typed_value: Any = cell_value_str # Default to string
-            
+
             if cell_value_str is None or cell_value_str == "": # Treat empty strings as None for nullable fields
                 typed_value = None
             elif field.type == 'number' or field.type == 'count':
@@ -205,7 +205,7 @@ async def import_csv_to_table(
             elif field.type == 'date' or field.type == 'createdTime' or field.type == 'lastModifiedTime':
                 # Expect ISO format or let Pydantic/SQLAlchemy handle it if possible.
                 # For now, pass as string. More robust parsing needed for various date formats.
-                typed_value = cell_value_str 
+                typed_value = cell_value_str
             elif field.type == 'multiSelect' or field.type == 'linkToRecord':
                 # Expect comma-separated string, convert to list of strings/ints
                 items = [item.strip() for item in cell_value_str.split(',') if item.strip()]
@@ -218,10 +218,10 @@ async def import_csv_to_table(
                 # For simplicity, import won't create attachments from filenames.
                 # Expects JSON string of metadata list, or skip. For now, skip complex parsing.
                 typed_value = None # Or parse if a specific format is defined for CSV import
-            
+
             if valid_row:
                 record_values_payload[field.id] = typed_value
-        
+
         if not valid_row:
             error_count += 1
             continue
@@ -235,9 +235,9 @@ async def import_csv_to_table(
         try:
             # Using current_user.id as owner of imported records
             await crud.create_table_record(
-                db=db, 
-                record_data=record_create_schema, 
-                table_id=table_id, 
+                db=db,
+                record_data=record_create_schema,
+                table_id=table_id,
                 user_id=current_user.id # Or table.owner_id if preferred for imported data
             )
             success_count += 1

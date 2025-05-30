@@ -37,13 +37,13 @@ async def read_records_for_table_endpoint(
 ):
     if sort_direction not in ["asc", "desc"]:
         raise HTTPException(status_code=400, detail="Invalid sort_direction. Must be 'asc' or 'desc'.")
-        
+
     # crud.get_records_by_table handles table ownership check and other logic
     records = crud.get_records_by_table(
-        db, 
-        table_id=table_id, 
-        user_id=current_user.id, 
-        skip=skip, 
+        db,
+        table_id=table_id,
+        user_id=current_user.id,
+        skip=skip,
         limit=limit,
         sort_by_field_id=sort_by_field_id,
         sort_direction=sort_direction,

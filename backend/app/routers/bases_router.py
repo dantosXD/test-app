@@ -14,17 +14,17 @@ router = APIRouter(
 
 @router.post("/", response_model=schemas.Base, status_code=status.HTTP_201_CREATED)
 async def create_new_base(
-    base: schemas.BaseCreate, 
-    db: Session = Depends(get_db), 
+    base: schemas.BaseCreate,
+    db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_active_user)
 ):
     return crud.create_base(db=db, base=base, owner_id=current_user.id)
 
 @router.get("/", response_model=List[schemas.Base])
 async def read_user_bases(
-    skip: int = 0, 
-    limit: int = 100, 
-    db: Session = Depends(get_db), 
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_active_user)
 ):
     bases = crud.get_bases_by_owner(db, owner_id=current_user.id, skip=skip, limit=limit)
@@ -32,8 +32,8 @@ async def read_user_bases(
 
 @router.get("/{base_id}", response_model=schemas.Base)
 async def read_single_base(
-    base_id: int, 
-    db: Session = Depends(get_db), 
+    base_id: int,
+    db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_active_user)
 ):
     db_base = crud.get_base(db, base_id=base_id, owner_id=current_user.id)
@@ -43,9 +43,9 @@ async def read_single_base(
 
 @router.put("/{base_id}", response_model=schemas.Base)
 async def update_existing_base(
-    base_id: int, 
-    base_update: schemas.BaseUpdate, 
-    db: Session = Depends(get_db), 
+    base_id: int,
+    base_update: schemas.BaseUpdate,
+    db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_active_user)
 ):
     updated_base = crud.update_base(db, base_id=base_id, base_update=base_update, owner_id=current_user.id)
@@ -55,8 +55,8 @@ async def update_existing_base(
 
 @router.delete("/{base_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_existing_base(
-    base_id: int, 
-    db: Session = Depends(get_db), 
+    base_id: int,
+    db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_active_user)
 ):
     deleted_base = crud.delete_base(db, base_id=base_id, owner_id=current_user.id)

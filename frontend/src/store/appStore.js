@@ -27,7 +27,7 @@ const useAppStore = create((set, get) => ({
   tablePermissions: [], // For current table
   isLoadingTablePermissions: false,
   errorTablePermissions: null,
-  // currentRecord: null, 
+  // currentRecord: null,
 
   // Actions
   setCurrentBaseId: async (baseId) => {
@@ -35,9 +35,9 @@ const useAppStore = create((set, get) => ({
       set({ currentBaseId: baseId, currentTableId: null, fields: [], records: [] }); // Clear downstream
       return;
     }
-    set({ 
-      currentBaseId: baseId, 
-      isLoadingTables: true, errorTables: null, tables: [], 
+    set({
+      currentBaseId: baseId,
+      isLoadingTables: true, errorTables: null, tables: [],
       currentTableId: null, fields: [], records: [] // Clear downstream
     });
     await get().fetchTables(baseId);
@@ -72,19 +72,19 @@ const useAppStore = create((set, get) => ({
 
   setCurrentTableId: async (tableId) => {
     if (get().currentTableId === tableId && get().fields.length > 0 && !get().errorFields && get().records.length > 0 && !get().errorRecords && get().views.length > 0 && !get().errorViews) {
-      set({ currentTableId: tableId }); 
+      set({ currentTableId: tableId });
       return;
     }
-    set({ 
-      currentTableId: tableId, 
-      isLoadingFields: true, errorFields: null, fields: [], 
+    set({
+      currentTableId: tableId,
+      isLoadingFields: true, errorFields: null, fields: [],
       isLoadingRecords: true, errorRecords: null, records: [],
       isLoadingViews: true, errorViews: null, views: [], currentViewId: null, // Reset views
     });
-    
+
     await get().fetchFields(tableId);
-    await get().fetchRecords(tableId); 
-    await get().fetchViews(tableId); 
+    await get().fetchRecords(tableId);
+    await get().fetchViews(tableId);
     await get().fetchTablePermissions(tableId); // Fetch permissions for the table
   },
 
@@ -119,8 +119,8 @@ const useAppStore = create((set, get) => ({
       set({ records: [], isLoadingRecords: false, errorRecords: null });
       return;
     }
-    set({ 
-      isLoadingRecords: true, 
+    set({
+      isLoadingRecords: true,
       errorRecords: null,
       // Update current sort/filter state if params are provided, otherwise use existing
       currentSort: sortByFieldId !== undefined ? { fieldId: sortByFieldId, direction: sortDirection || 'asc' } : get().currentSort,
@@ -145,7 +145,7 @@ const useAppStore = create((set, get) => ({
       set({ isLoadingRecords: false, errorRecords: error.message || 'Failed to fetch records' });
     }
   },
-  
+
   // Action to explicitly set sorting and refetch
   setSort: async (tableId, fieldId, direction) => {
     if (!tableId || fieldId === null) { // Allow clearing sort by passing null fieldId
@@ -205,21 +205,21 @@ const useAppStore = create((set, get) => ({
             case 'boolean': existingValue = rv.value_boolean; break;
             case 'date': existingValue = rv.value_datetime; break; // Might need formatting if backend expects string
             default: // singleSelect, multiSelect, email, url, phoneNumber, json types
-                existingValue = rv.value_json !== null ? rv.value_json : rv.value_text; 
+                existingValue = rv.value_json !== null ? rv.value_json : rv.value_text;
                 break;
         }
         updatedValuesPayload.values[rv.field_id] = existingValue;
       }
     });
-    
+
     // Now, set the new value for the field being updated
     updatedValuesPayload.values[fieldId] = newValue;
-    
+
     try {
       await recordService.updateRecord(recordId, updatedValuesPayload);
       // Refresh records for the current table to show the update
       // This is a simple approach; a more optimized way would be to update the record in the local state directly.
-      await get().fetchRecords(tableId); 
+      await get().fetchRecords(tableId);
     } catch (error) {
       console.error('Failed to update record value:', error);
       set({ errorRecords: error.message || 'Failed to update record value' });
@@ -246,7 +246,7 @@ const useAppStore = create((set, get) => ({
       records: state.records.filter((record) => record.id !== deletedRecordData.record_id),
     }));
   },
-  
+
   clearRecords: () => {
     set({ records: [], isLoadingRecords: false, errorRecords: null });
   },
@@ -264,7 +264,7 @@ const useAppStore = create((set, get) => ({
       errorTables: null,
       errorFields: null,
       errorRecords: null,
-      currentSort: { fieldId: null, direction: 'asc' }, 
+      currentSort: { fieldId: null, direction: 'asc' },
       currentFilters: { fieldId: null, value: '' },
       views: [], // Reset views state
       currentViewId: null,
@@ -303,7 +303,7 @@ const useAppStore = create((set, get) => ({
         set({ currentViewId: null }); // Mark that no specific view is loaded (or a "default" view)
         return;
     }
-    
+
     // Apply sorts from view config
     if (viewConfig.sorts && viewConfig.sorts.length > 0) {
       const firstSort = viewConfig.sorts[0];
@@ -319,16 +319,16 @@ const useAppStore = create((set, get) => ({
     } else {
       get().setFilter(get().currentTableId, null, ''); // Clear filter if view has no filters
     }
-    
+
     // Handle visible_field_ids and field_order - this affects column setup in TableDetailPage
     // This might require additional state in appStore or for TableDetailPage to consume this part of config.
     // For now, storing currentViewId and letting TableDetailPage adjust its columns if needed.
     // set({ currentViewConfig: viewConfig }); // Store the whole config if needed
-    set(state => ({ 
-        ...state, 
+    set(state => ({
+        ...state,
         // currentSort and currentFilters are updated by setSort/setFilter calls above
         // Potentially store visible_field_ids and field_order if appStore manages column visibility/order
-        // currentVisibleFieldIds: viewConfig.visible_field_ids || null, 
+        // currentVisibleFieldIds: viewConfig.visible_field_ids || null,
         // currentFieldOrder: viewConfig.field_order || null,
     }));
   },
@@ -364,7 +364,7 @@ const useAppStore = create((set, get) => ({
         await viewService.deleteView(viewId);
         await get().fetchViews(tableId); // Refresh views list
         if (get().currentViewId === viewId) { // If current view deleted, load default
-            get().loadView(null); 
+            get().loadView(null);
             set({ currentViewId: null });
         }
         set({ errorViews: null });

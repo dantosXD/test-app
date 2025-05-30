@@ -32,7 +32,7 @@ const DashboardPage = () => {
   const handleBaseClick = (baseId) => {
     // setCurrentBaseId will also trigger fetching tables for this base
     // No need to call it here, store action handles it.
-    // setCurrentBaseId(baseId); 
+    // setCurrentBaseId(baseId);
     navigate(`/bases/${baseId}`);
   };
 
@@ -52,13 +52,13 @@ const DashboardPage = () => {
       {bases.length > 0 ? (
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {bases.map((base) => (
-            <li 
-              key={base.id} 
+            <li
+              key={base.id}
               onClick={() => handleBaseClick(base.id)}
-              style={{ 
-                padding: '10px', 
-                border: '1px solid #ddd', 
-                marginBottom: '5px', 
+              style={{
+                padding: '10px',
+                border: '1px solid #ddd',
+                marginBottom: '5px',
                 cursor: 'pointer',
                 borderRadius: '4px',
                 backgroundColor: '#f9f9f9'

@@ -1,7 +1,7 @@
 """create_record_links_table_and_relationships
 
 Revision ID: bebd269815aa
-Revises: 22f0a0135ea6 
+Revises: 22f0a0135ea6
 Create Date: 2025-05-29 20:23:32.291344
 
 """

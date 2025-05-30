@@ -23,7 +23,7 @@ const login = async (email, password) => {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
-    
+
     const { access_token, token_type } = response.data;
     if (access_token) {
       // For now, user data is not returned by /auth/login in the backend.

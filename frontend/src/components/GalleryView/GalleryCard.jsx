@@ -4,7 +4,7 @@ import React from 'react';
 // This is similar to the one in KanbanCard, could be centralized if used often.
 const getDisplayValueForCard = (field, recordValue) => {
     if (!recordValue) return 'N/A';
-  
+
     switch (field.type) {
       case 'text': case 'email': case 'url': case 'phoneNumber': case 'singleSelect':
         return recordValue.value_text || '';
@@ -28,7 +28,7 @@ const getDisplayValueForCard = (field, recordValue) => {
 
 const GalleryCard = ({ record, viewConfig, allFields, onCardClick }) => {
   const { cover_field_id, card_visible_field_ids, card_width } = viewConfig;
-  
+
   const cardStyle = {
     border: '1px solid #ddd',
     borderRadius: '8px',
@@ -95,7 +95,7 @@ const GalleryCard = ({ record, viewConfig, allFields, onCardClick }) => {
           const field = allFields.find(f => f.id === fieldId);
           const recordValue = record.values.find(rv => rv.field_id === fieldId);
           if (!field) return <div key={`field-${fieldId}-missing`} style={{fontSize: '0.8em', color: 'red'}}>Field ID {fieldId} not found</div>;
-          
+
           return (
             <div key={field.id} style={{ marginBottom: '6px', fontSize: '0.9em' }}>
               <strong style={{ color: '#333', display: 'block' }}>{field.name}:</strong>

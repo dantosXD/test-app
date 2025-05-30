@@ -24,5 +24,5 @@ const getBases = async () => {
 
 export default {
   getBases,
-  // createBase, 
+  // createBase,
 };

@@ -11,7 +11,7 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    
+
     class Config:
         from_attributes = True # Changed from orm_mode = True
 
@@ -36,7 +36,7 @@ class BaseUpdate(BaseBase):
 class Base(BaseBase):
     id: int
     owner_id: int
-    
+
     class Config:
         from_attributes = True
 
@@ -47,7 +47,7 @@ class ViewSortItem(BaseModel):
 
 class ViewFilterItem(BaseModel):
     field_id: int
-    operator: str 
+    operator: str
     value: Any
 
 # For Form View Config
@@ -61,10 +61,10 @@ class FormFieldConfig(BaseModel):
 class ViewConfig(BaseModel):
     # Grid specific (can be moved to a nested model if preferred)
     visible_field_ids: Optional[List[int]] = None
-    field_order: Optional[Dict[str, int]] = None 
+    field_order: Optional[Dict[str, int]] = None
     sorts: Optional[List[ViewSortItem]] = None
     filters: Optional[List[ViewFilterItem]] = None
-    
+
     # Form specific
     title: Optional[str] = None
     description: Optional[str] = None
@@ -74,7 +74,7 @@ class ViewConfig(BaseModel):
     # Kanban specific
     stack_by_field_id: Optional[int] = None
     card_fields: Optional[List[int]] = None # List of field_ids to show on cards
-    column_order: Optional[List[str]] = None 
+    column_order: Optional[List[str]] = None
 
     # Calendar specific
     date_field_id: Optional[int] = None
@@ -90,15 +90,15 @@ class ViewConfig(BaseModel):
     @model_validator(mode='after')
     def check_view_config(cls, data):
         # Form validation (existing)
-        if data.form_fields: 
+        if data.form_fields:
             orders = [ff.order for ff in data.form_fields]
-            if len(orders) != len(set(orders)): pass 
-        
+            if len(orders) != len(set(orders)): pass
+
         # Kanban validation (existing)
-        if data.stack_by_field_id is not None: 
+        if data.stack_by_field_id is not None:
             if data.card_fields and not all(isinstance(cf_id, int) for cf_id in data.card_fields):
                 raise ValueError("All elements in card_fields must be integer field_ids for Kanban.")
-        elif data.card_fields is not None: 
+        elif data.card_fields is not None:
              raise ValueError("stack_by_field_id must be provided if card_fields are defined for a Kanban view.")
 
         # Calendar validation
@@ -109,7 +109,7 @@ class ViewConfig(BaseModel):
                 raise ValueError("date_field_id and event_title_field_id must be integers for Calendar.")
             if data.end_date_field_id is not None and not isinstance(data.end_date_field_id, int):
                 raise ValueError("end_date_field_id must be an integer if provided for Calendar.")
-        elif data.event_title_field_id is not None: 
+        elif data.event_title_field_id is not None:
             raise ValueError("date_field_id must be provided if event_title_field_id is defined for a Calendar view.")
 
         # Gallery validation
@@ -140,7 +140,7 @@ class ViewBase(BaseModel):
 class ViewCreate(ViewBase):
     pass
 
-class ViewUpdate(BaseModel): 
+class ViewUpdate(BaseModel):
     name: Optional[str] = None
     type: Optional[ALLOWED_VIEW_TYPES] = None
     config: Optional[ViewConfig] = None
@@ -174,18 +174,18 @@ class Table(TableBase):
 # Field Schemas
 from typing import Literal
 ALLOWED_FIELD_TYPES = Literal[
-    'text', 'number', 'date', 'boolean', 'singleSelect', 'multiSelect', 
-    'attachment', 'email', 'url', 'phoneNumber', 'formula', 'lookup', 
+    'text', 'number', 'date', 'boolean', 'singleSelect', 'multiSelect',
+    'attachment', 'email', 'url', 'phoneNumber', 'formula', 'lookup',
     'count', 'rollup', 'user', 'createdTime', 'lastModifiedTime', 'autoNumber',
-    'linkToRecord', 
+    'linkToRecord',
     'formula',
     'attachment' # New field type
 ]
 
 class FieldOptions(BaseModel):
     choices: Optional[List[str]] = None
-    linked_table_id: Optional[int] = None 
-    formula_string: Optional[str] = None 
+    linked_table_id: Optional[int] = None
+    formula_string: Optional[str] = None
     # Options for attachment, e.g., allowedMimeTypes, maxSize - for future
     # allowed_mime_types: Optional[List[str]] = None
     # max_file_size_mb: Optional[int] = None
@@ -208,7 +208,7 @@ class FieldBase(BaseModel):
         elif data.type == 'linkToRecord':
             if not data.options or data.options.linked_table_id is None:
                 raise ValueError('linked_table_id must be provided for linkToRecord fields.')
-            if not isinstance(data.options.linked_table_id, int): 
+            if not isinstance(data.options.linked_table_id, int):
                  raise ValueError('linked_table_id must be an integer.')
         elif data.type == 'formula':
             if not data.options or not data.options.formula_string:
@@ -221,7 +221,7 @@ class FieldBase(BaseModel):
 class FieldCreate(FieldBase):
     pass
 
-class FieldUpdate(BaseModel): 
+class FieldUpdate(BaseModel):
     name: Optional[str] = None
     type: Optional[ALLOWED_FIELD_TYPES] = None
     options: Optional[FieldOptions] = None # Allow updating options
@@ -308,7 +308,7 @@ class Record(BaseModel): # No RecordBase needed if response always has these fie
         # It requires access to the original ORM instance's `_computed_formula_values`
         # and the `field_defs_map` which is not directly available here without context.
         # The router or CRUD layer should prepare the Record model by passing context.
-        
+
         # For example, if context was passed during model_validate:
         # sa_record = self.model_fields_set.get('_sa_instance_') # Hypothetical context
         # field_defs_map = self.model_fields_set.get('_field_defs_map_')
@@ -318,7 +318,7 @@ class Record(BaseModel): # No RecordBase needed if response always has these fie
         # and then the Record Pydantic model is created from a dict that includes this final list.
         # This means the logic from crud._computed_formula_values and creating RecordValue schemas
         # for formulas will largely live in the CRUD functions before this Pydantic model is formed.
-        
+
         # For now, this validator won't do anything. The CRUD will be responsible for ensuring
         # the `values` list passed to Record's Pydantic constructor (or from_orm)
         # already contains RecordValue Pydantic models for formula fields with computed values.

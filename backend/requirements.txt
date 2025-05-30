@@ -7,3 +7,8 @@ pydantic
 python-jose[cryptography]
 passlib[bcrypt]
 python-dotenv
+pydantic-settings # Added missing dependency
+pytest
+pytest-cov
+httpx
+# pytest-asyncio # Usually not needed if using FastAPI TestClient with httpx

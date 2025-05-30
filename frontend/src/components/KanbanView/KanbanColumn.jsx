@@ -29,11 +29,11 @@ const KanbanColumn = ({ columnId, title, records, cardFields, allFields }) => {
       <div style={titleStyle}>{title} ({records.length})</div>
       <SortableContext items={records.map(r => r.id)} strategy={verticalListSortingStrategy}>
         {records.map(record => (
-          <KanbanCard 
-            key={record.id} 
-            record={record} 
-            cardFields={cardFields} 
-            allFields={allFields} 
+          <KanbanCard
+            key={record.id}
+            record={record}
+            cardFields={cardFields}
+            allFields={allFields}
           />
         ))}
       </SortableContext>

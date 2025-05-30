@@ -38,10 +38,10 @@ async def grant_permission_for_table(
         raise HTTPException(status_code=404, detail=f"User with email {request.user_email} not found")
 
     permission_sa = crud.grant_table_permission(
-        db=db, 
-        table_id=table_id, 
-        target_user_id=target_user.id, 
-        permission_level=request.permission_level, 
+        db=db,
+        table_id=table_id,
+        target_user_id=target_user.id,
+        permission_level=request.permission_level,
         current_user_id=current_user.id
     )
     return TablePermissionResponse(
@@ -65,7 +65,7 @@ async def revoke_permission_for_table(
         current_user_id=current_user.id
     )
     from fastapi import Response # Ensure Response is imported
-    return Response(status_code=status.HTTP_204_NO_CONTENT) 
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/", response_model=List[TablePermissionResponse])
@@ -75,7 +75,7 @@ async def list_permissions_for_table(
     current_user: models.User = Depends(auth.get_current_active_user)
 ):
     permissions_sa_list = crud.get_table_permissions(db=db, table_id=table_id, current_user_id=current_user.id)
-    
+
     response_list = []
     for perm_sa in permissions_sa_list:
         # perm_sa.user should be loaded if relationship is set up correctly, or fetch user
@@ -83,7 +83,7 @@ async def list_permissions_for_table(
         if not perm_sa.user: # If user somehow not loaded/deleted, fetch manually
             user_model = crud.get_user(db, user_id=perm_sa.user_id)
             if user_model: user_email = user_model.email
-            
+
         response_list.append(TablePermissionResponse(
             user_id=perm_sa.user_id,
             email=user_email,

@@ -36,7 +36,7 @@ class ConnectionManager:
                 except Exception as e: # Catches various errors including WebSocketDisconnect, ConnectionClosed
                     print(f"Error sending message to {connection.client} in room {room_id}: {e}. Marking for disconnect.")
                     disconnected_clients.append(connection)
-            
+
             # Clean up disconnected clients after broadcast attempt
             for client_to_disconnect in disconnected_clients:
                 self.disconnect(client_to_disconnect, room_id)
@@ -47,8 +47,8 @@ class ConnectionManager:
             disconnected_clients = []
             # Convert dict to JSON string for sending
             import json # Local import
-            message = json.dumps(data) 
-            
+            message = json.dumps(data)
+
             for connection in self.active_connections[room_id]:
                 try:
                     await connection.send_text(message) # send_text expects string
